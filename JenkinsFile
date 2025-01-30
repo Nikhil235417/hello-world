@@ -16,16 +16,21 @@ pipeline {
 
         stage('Test') {
             steps {
-                bat 'mvn test'  // Run unit tests
+                sh 'mvn test'  // Run unit tests
             }
         }
+        stage('Archive') {
+            steps {
+                 archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+    }
+}
 
         stage('Deploy') {
-            steps {
-                echo "Deploying the application..."
-                // Add deployment steps (e.g., copying files, deploying to Tomcat, etc.)
-            }
-        }
+           steps {
+               sh 'docker build -t my-app .'
+               sh 'docker run -d -p 8080:8080 my-app'
+    }
+}
     }
 
     post {
